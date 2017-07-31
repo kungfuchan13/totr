@@ -1,12 +1,13 @@
 <html>
 <font size=2>
-Instructions: Copy/Paste the data into the large text field, then click on one of the buttons below to filter them appropriately.<br>
+Instructions: Copy/Paste the data you want to check into the large text field (starting from the stage name, preferrably), then click on one of the buttons below to filter it appropriately.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;Search for Monster ~ Type in the exact name of a monster, and every encounter where that monster appeared will be listed.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;Search for Item ~ Type in the exact name of an item (or abbreviation if it is a Chiral Crystal or Anima Orb), and every encounter where that item appeared will be listed.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Include Guaranteed ~ Checking this option will make it also list the encounters where exactly one of the guaranteed item was dropped.
 &nbsp;&nbsp;&nbsp;&nbsp;Show Chest/Monster Drops ~ Separates the items in a stage into those that were dropped by enemies and those that were acquired from chests.<br>
 <br>
 </font>
-<textarea id="a" style="width: 750px; height: 500px;"></textarea><br>
+<textarea id="a" style="width: 500px; height: 250px;"></textarea><br>
 <input id="monster"><input type="button" value="Search for Monster" onclick="searchMonster();"><br>
 <input id="item"><input type="button" value="Search for Item" onclick="searchForItem();"> Include Guaranteed: <input id="guarantee" type="checkbox"><br>
 <input type="button" value="Show Chest/Monster Drops" onclick="process();">
@@ -111,7 +112,7 @@ function searchForItem() {
                     encounterList.push({name: mon, value: encounters[ii]});
             }
             else {
-                if (drops.includes(searchItem.value) && (drops[0] != searchItem.value || (drops[0] == searchItem.value && drops[0] != encounter[encounter.length-1].split(", ")[0])))
+                if (drops.includes(searchItem.value) && (mon.includes("Chest") || drops[0] != searchItem.value || (drops[0] == searchItem.value && drops[0] != encounter[encounter.length-1].split(", ")[0])))
                     encounterList.push({name: mon, value: encounters[ii]});
             }
         }
