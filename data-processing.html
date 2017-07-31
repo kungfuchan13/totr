@@ -1,14 +1,15 @@
 <html>
 <font size=2>
 Instructions: Copy/Paste the data you want to check into the large text field (starting from the stage name, preferrably), then click on one of the buttons below to filter it appropriately.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;Search for Monster ~ Type in the exact name of a monster, and every encounter where that monster appeared will be listed.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;Search for Item ~ Type in the exact name of an item (or abbreviation if it is a Chiral Crystal or Anima Orb), and every encounter where that item appeared will be listed.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Include Guaranteed ~ Checking this option will make it also list the encounters where exactly one of the guaranteed item was dropped.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;Show Chest/Monster Drops ~ Separates the items in a stage into those that were dropped by enemies and those that were acquired from chests.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Search for Monster ~ Type in the exact name of a monster, and every encounter where that monster appeared and did not just drop a guaranteed item will be listed.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Include Guaranteed ~ Checking this option will make it also list the encounters where exactly one of a guaranteed item was dropped.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Search for Item ~ Type in the exact name of an item (or abbreviation if it is a Chiral Crystal or Anima Orb), and every encounter where that item appeared and it was not the guaranteed item will be listed.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Include Guaranteed ~ Checking this option will make it also list the encounters where exactly one of a guaranteed item was dropped.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Show Chest/Monster Drops ~ Separates the items in a stage into those that were dropped by enemies and those that were acquired from chests. When using this function, the data must be the only thing in the text box (no "Dailies" note or such), or else the output will be messed up.<br>
 <br>
 </font>
 <textarea id="a" style="width: 500px; height: 250px;"></textarea><br>
-<input id="monster"><input type="button" value="Search for Monster" onclick="searchMonster();"><br>
+<input id="monster"><input type="button" value="Search for Monster" onclick="searchMonster();"> Include Guaranteed: <input id="guaranteeMon" type="checkbox"><br>
 <input id="item"><input type="button" value="Search for Item" onclick="searchForItem();"> Include Guaranteed: <input id="guarantee" type="checkbox"><br>
 <input type="button" value="Show Chest/Monster Drops" onclick="process();">
 <div id="b"></div>
@@ -79,8 +80,14 @@ function searchMonster() {
             if (encounter[1])
                 monList = encounter[1].split(", ").map(removeCount);
             var drops = encounter[encounter.length-1].split(", ");
-            if (monList.includes(searchMon.value) && drops.length > 1)
-                encounterList.push({name: mon, value: encounters[ii]});
+            if (document.getElementById("guaranteeMon").checked) {
+                if (monList.includes(searchMon.value))
+                    encounterList.push({name: mon, value: encounters[ii]});
+            }
+            else {
+                if (monList.includes(searchMon.value) && (drops.length > 1 || drops[0] != removeCount(drops[0])))
+                    encounterList.push({name: mon, value: encounters[ii]});
+            }
         }
         encounterList.sort(nameSort);
         if (encounterList.length > 0) {
