@@ -1,0 +1,134 @@
+<html>
+<textarea id="a"></textarea><br>
+<input id="monster"><input type="button" value="Search for Monster" onclick="searchMonster();"><br>
+<input id="item"><input type="button" value="Search for Item" onclick="searchForItem();"> Include Guaranteed: <input id="guarantee" type="checkbox"><br>
+<input type="button" value="Show Chest/Monster Drops" onclick="process();">
+<div id="b"></div>
+</html>
+
+<script>
+var a = document.getElementById("a");
+var searchMon = document.getElementById("monster");
+var searchItem = document.getElementById("item");
+var b = document.getElementById("b");
+
+function process() {
+    b.innerHTML = "";
+    var stages = a.value.split(":");
+    for (var i = 1; i < stages.length; i++) {
+        var encounters = stages[i].split("\n");
+        var unqMon = {};
+        var unqChest = {};
+        var monItem = [];
+        var chestItem = [];
+        for (var ii = 0; ii < encounters.length-1; ii++) {
+            var encounter = encounters[ii].split(" ~ ");
+            var mon = encounter[0];
+            var drops = encounter[encounter.length - 1].split(", ");
+            for (var iii = 0; iii < drops.length; iii++) {
+                var drop = removeCount(drops[iii]);
+                if (mon.includes("Chest")) {
+                    if (!unqChest[drop]) {
+                    chestItem.push(drop);
+                    unqChest[drop] = true;
+                    }
+                }
+                else if (mon) {
+                    if (!unqMon[drop]) {
+                    monItem.push(drop);
+                    unqMon[drop] = true;
+                    }
+                }
+            }
+        }
+        var prevStage = stages[i-1].split("\n");
+        b.innerHTML += prevStage[prevStage.length-1] + "<br>";
+        monItem.sort();
+        chestItem.sort();
+        b.innerHTML += "Monster ~ " + monItem + "<br>";
+        b.innerHTML += "Chest ~ " + chestItem + "<br><br>";
+    }
+}
+
+function removeCount(string) {
+    if (parseInt(string[string.length-1]))
+        return string.substring(0, string.length-3);
+    else if (string == "Forest" || string == "Road" || string == "Icy Mountain" || string == "Mountain Road" || string == "Desert")
+        return "";
+    else return string;
+}
+
+function searchMonster() {
+    b.innerHTML = "";
+    var stages = a.value.split(":");
+    for (var i = 1; i < stages.length; i++) {
+        var encounters = stages[i].split("\n");
+        var encounterList = [];
+        for (var ii = 0; ii < encounters.length; ii++) {
+            var encounter = encounters[ii].split(" ~ ");
+            var mon = encounter[0];
+            var monList = [];
+            if (encounter[1])
+                monList = encounter[1].split(", ").map(removeCount);
+            var drops = encounter[encounter.length-1].split(", ");
+            if (monList.includes(searchMon.value) && drops.length > 1)
+                encounterList.push({name: mon, value: encounters[ii]});
+        }
+        encounterList.sort(nameSort);
+        if (encounterList.length > 0) {
+            var prevStage = stages[i-1].split("\n");
+            b.innerHTML += "<br>" + prevStage[prevStage.length-1] + "<br>";
+        }
+        for (var ii = 0; ii < encounterList.length; ii++) {
+            if (encounterList[ii].name) {
+                if (encounterList[ii].name[0] != "B")
+                    b.innerHTML += "&nbsp;";
+                b.innerHTML += encounterList[ii].value + "<br>";
+            }
+        }
+    }
+}
+
+function searchForItem() {
+    b.innerHTML = "";
+    var stages = a.value.split(":");
+    for (var i = 1; i < stages.length; i++) {
+        var encounters = stages[i].split("\n");
+        var encounterList = [];
+        for (var ii = 0; ii < encounters.length; ii++) {
+            var encounter = encounters[ii].split(" ~ ");
+            var mon = encounter[0];
+            var drops = encounter[encounter.length-1].split(", ").map(removeCount);
+            if (document.getElementById("guarantee").checked) {
+                if (drops.includes(searchItem.value))
+                    encounterList.push({name: mon, value: encounters[ii]});
+            }
+            else {
+                if (drops.includes(searchItem.value) && (drops[0] != searchItem.value || (drops[0] == searchItem.value && drops[0] != encounter[encounter.length-1].split(", ")[0])))
+                    encounterList.push({name: mon, value: encounters[ii]});
+            }
+        }
+        encounterList.sort(nameSort);
+        if (encounterList.length > 0) {
+            var prevStage = stages[i-1].split("\n");
+            b.innerHTML += "<br>" + prevStage[prevStage.length-1] + "<br>";
+        }
+        for (var ii = 0; ii < encounterList.length; ii++) {
+            if (encounterList[ii].name) {
+                if (encounterList[ii].name[0] != "B")
+                    b.innerHTML += "&nbsp;";
+                b.innerHTML += encounterList[ii].value + "<br>";
+            }
+        }
+    }
+}
+
+function nameSort(a, b) {
+    if (a.name.includes("Chest")) return -1;
+    else if (b.name.includes("Chest")) return 1;
+    if (a.name < b.name) return -1;
+    if (a.name > b.name) return 1;
+    return 0;
+}
+
+</script>
