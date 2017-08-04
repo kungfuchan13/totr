@@ -62,6 +62,26 @@ function process() {
                     }
                 }
             }
+            if (encounters[encounters.length-1].startsWith("B - ") || encounters[encounters.length-1].startsWith(" - ")) {
+                var encounter = encounters[encounters.length-1].split(" ~ ");
+                var mon = rmvInitSpce(encounter[0]);
+                var drops = encounter[encounter.length - 1].split(", ");
+                for (var iii = 0; iii < drops.length; iii++) {
+                    var drop = removeCount(drops[iii]);
+                    if (mon.includes("Chest")) {
+                        if (!unqChest[drop]) {
+                        chestItem.push(drop);
+                        unqChest[drop] = true;
+                        }
+                    }
+                    else if (mon) {
+                        if (!unqMon[drop]) {
+                        monItem.push(drop);
+                        unqMon[drop] = true;
+                        }
+                    }
+                }
+            }
         }
         var prevStage = stages[i-1].split("\n");
         b.innerHTML += prevStage[prevStage.length-1] + "<br>";
@@ -216,9 +236,9 @@ function elementSearch() {
         }
     }
 
-    for (var e = 0; e < 6; e++) {
+    /*for (var e = 0; e < 6; e++) {
         elements[e].forEach(i => { if (i.value.length == 1 && !unqKnown[i.value[0]]) { known[e].push(i.value[0]); unqKnown[i.value[0]] = true; } } );
-    }
+    }*/
 
     elements = clearKnown(elements, known);
     elements.forEach(l => { l.sort(firstNameSort); l.sort(lengthSort); });
@@ -256,9 +276,10 @@ function showMonsters() {
             unqMon = {};
         }
         var encounters = stages[i].split("\n");
-        var curStageName = parseInt(encounters[encounters.length-1]) + "-" + parseInt(encounters[encounters.length-1].split("-")[1]);
-        if (curStageName == (parseInt(prevStageName) + "-" + parseInt(prevStageName.split("-")[1]))) {
-            ignoreNext = true;
+        if (!isNaN(prevStageName[0])) {
+            var curStageName = parseInt(encounters[encounters.length-1]) + "-" + parseInt(encounters[encounters.length-1].split("-")[1]);
+            if (curStageName == (parseInt(prevStageName) + "-" + parseInt(prevStageName.split("-")[1])))
+                ignoreNext = true;
         }
         for (var ii = 0; ii < encounters.length-1; ii++) {
             var encounter = encounters[ii].split(" ~ ");
@@ -326,30 +347,17 @@ function pullStageMonsters(index) {
     var prevStageName = prevStage[prevStage.length-1];
     var monList = ["Chest " + prevStageName];
     var encounters = stages[index].split("\n");
-    var curStageName = parseInt(encounters[encounters.length-1]) + "-" + parseInt(encounters[encounters.length-1].split("-")[1]);
-    if (curStageName == (parseInt(prevStageName) + "-" + parseInt(prevStageName.split("-")[1])))
-        checkNext = true;
+    var curStageName = (!isNaN(encounters[encounters.length-1][0]))?(parseInt(encounters[encounters.length-1]) + "-" + parseInt(encounters[encounters.length-1].split("-")[1])):("");
+    if (!isNaN(prevStageName[0]))
+        if (curStageName == (parseInt(prevStageName) + "-" + parseInt(prevStageName.split("-")[1])))
+            checkNext = true;
     for (var i = 0; i < encounters.length-1; i++) {
         var encounter = encounters[i].split(" ~ ");
         if (encounter[1] && !encounter[0].includes("Chest")) {
             var rawList = encounter[1].split(", ");
             for (var ii = 0; ii < rawList.length; ii++) {
                 var mon = removeCount(rawList[ii]);
-                if (!unqMon[mon]) {
-                    monList.push(mon);
-                    unqMon[mon] = true;
-                }
-            }
-        }
-    }
-    /*if (checkNext && index != stages.length) {
-        encounters = stages[index+1].split("\n");
-        for (var i = 0; i < encounters.length-1; i++) {
-            var encounter = encounters[i].split(" ~ ");
-            if (encounter[1] && !encounter[0].includes("Chest")) {
-                var rawList = encounter[1].split(", ");
-                for (var ii = 0; ii < rawList.length; ii++) {
-                    var mon = removeCount(rawList[ii]);
+                if (!(encounter[0].startsWith("B - ") && ii == 0)) {
                     if (!unqMon[mon]) {
                         monList.push(mon);
                         unqMon[mon] = true;
@@ -357,7 +365,7 @@ function pullStageMonsters(index) {
                 }
             }
         }
-    }*/
+    }
     return monList;
 }
 
