@@ -11,10 +11,10 @@ Instructions: Copy/Paste the data you want to check into the large text field (s
 &nbsp;&nbsp;&nbsp;&nbsp;Split Elements ~ Searches for element drops, then uses the following process to determine which monster dropped what:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1. Check for encounters of one monster type that drop an element (confirm that that monster type drops that element).<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2. Eliminate the encounters that include a monster with a confirmed element drop of the same type (impossible to tell if it wasn't just the confirmed monster that dropped it).<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3. Remove monsters with different confirmed element drops from encounters (e.g. remove Wolves from any not-Null monster lists) (assume eacah monster can only drop one kind of element).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3. Remove monsters with different confirmed element drops from encounters (e.g. remove Wolves from any not-Null monster lists) (assume each monster can only drop one kind of element).<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4. Repeat until the entire list has been processed.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Show Chests ~ (Buggy; not recommended) Includes elements acquired from chests, under the assumption that chest drops are solely based on the enemies in a stage. Can lead to strange results, especially since it only checks the monsters found in the same difficulty of the stage as the chest.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;Show Monsters ~ Shows the monsters that can be found in each stage. If the stage is listed as Hard mode, that just means there is data for both Normal and Hard modes, and it's combining the two.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Show Monsters ~ Shows the monsters that can be found in each stage. If the stage is listed as Hard mode, that just means there is data for both Normal and Hard modes, and it's combining the two. "WARNING" means that there are less than four types of monsters found, so there may be more monsters not in the data.<br>
 <br>
 </font>
 <textarea id="a"></textarea><br>
