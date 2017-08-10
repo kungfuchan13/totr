@@ -1,5 +1,14 @@
 <html>
 <body onkeyup="if (autoSwitch) autoSwitch = false;">
+<font size=2>
+Instructions: Copy/Paste my entire set of data (or other data formatted the same way) into the large textbox at the top. This data is used to pull the monsters and drops for each stage.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;- In the smaller textbox, type in the name of the stage you are creating data for (Story stages go by number, like 5-2, Event by name, like Drago Senbei; Dailies will break a bit, but you can use "Easy"/"Normal"/"Hard"/"Maniac").<br>
+&nbsp;&nbsp;&nbsp;&nbsp;- Select the monsters in the encounter from the dropdown menu and type in their amounts in the small textboxes next to them. Leave the count field blank if there is only one.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;- Hit the Enter key or click the "Add Row" button to add the data. The first, guaranteed, drop will automatically be filled in, but the rest will have to be manually added.
+&nbsp;&nbsp;&nbsp;&nbsp;- Hitting the Enter key with the output data box selected will create a line for a Chest drop.
+</font>
+<br>
+<br>
 <textarea id="a"></textarea><br>
 <br>
 <input id="stage" onblur="searchStage();"><br>
@@ -19,6 +28,7 @@ var autoSwitch = false;
 var stage = document.getElementById("stage");
 
 var guaranteedDrop = {};
+var unqMon = {};
 
 function searchStage() {
     document.getElementById("mon1").innerHTML = "<option value=''>None</option>";
@@ -26,7 +36,8 @@ function searchStage() {
     document.getElementById("mon3").innerHTML = "<option value=''>None</option>";
 
     var monList = [];
-    var unqMon = {};
+    unqMon = {};
+    guaranteedDrop = {};
     var stages = a.value.split(":");
     for (var i = 1; i < stages.length; i++) {
         var encounters = stages[i].split("\n");
@@ -38,9 +49,9 @@ function searchStage() {
                 var encounter = encounters[ii].split(" ~ ");
                 if (!unqMon[encounter[0]]) {
                     if (encounter[0].startsWith("B - "))
-                        guaranteedDrop[encounter[0].substring(4)] = encounter[encounter.length-1].split(", ")[0];
+                        guaranteedDrop[encounter[0].substring(4)] = removeCount(encounter[encounter.length-1].split(", ")[0]);
                     else
-                        guaranteedDrop[encounter[0].substring(3)] = encounter[encounter.length-1].split(", ")[0];
+                        guaranteedDrop[encounter[0].substring(3)] = removeCount(encounter[encounter.length-1].split(", ")[0]);
                 }
                 if (encounter[1] && !encounter[0].includes("Chest")) {
                     var rawList = encounter[1].split(", ");
@@ -48,12 +59,14 @@ function searchStage() {
                         var mon = removeCount(rawList[iii]);
                         if (!unqMon[mon]) {
                             monList.push(mon);
-                            unqMon[mon] = true;
+                            unqMon[mon] = {};
+                            if (encounter[0].includes("B - "))
+                                unqMon[mon].boss = true;
                         }
                     }
                 }
             }
-            if (encounters[encounters.length-1].startsWith("B - ") || encounters[encounters.length-1].startsWith(" - ")) {
+            if (encounters[encounters.length-1].split(" ~ ").length > 2) {
                 var encounter = encounters[encounters.length-1].split(" ~ ");
                 if (encounter[1] && !encounter[0].includes("Chest")) {
                     var rawList = encounter[1].split(", ");
@@ -62,6 +75,8 @@ function searchStage() {
                         if (!unqMon[mon]) {
                             monList.push(mon);
                             unqMon[mon] = true;
+                            if (encounters[encounters.length-1][0].startsWith("B - ") && iii == 0)
+                                unqMon[mon].boss = true;
                         }
                     }
                 }
@@ -74,7 +89,8 @@ function searchStage() {
 }
 
 function addRow() {
-    b.value += "\n - " + document.getElementById("mon1").value + " ~ ";
+    b.value += (b.value == "")?(""):("\n");
+    b.value += (unqMon[document.getElementById("mon1").value].boss)?("B - "):(" - ") + document.getElementById("mon1").value + " ~ ";
     for (var i = 1; i < 4; i++) {
         if (i != 1 && document.getElementById("mon"+i).value)
             b.value += ", ";
