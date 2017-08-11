@@ -90,7 +90,8 @@ function searchStage() {
 
 function addRow() {
     b.value += (b.value == "")?(""):("\n");
-    b.value += (unqMon[document.getElementById("mon1").value].boss)?("B - "):(" - ") + document.getElementById("mon1").value + " ~ ";
+    b.value += (unqMon[document.getElementById("mon1").value].boss)?("B - "):(" - ");
+    b.value += document.getElementById("mon1").value + " ~ ";
     for (var i = 1; i < 4; i++) {
         if (i != 1 && document.getElementById("mon"+i).value)
             b.value += ", ";
