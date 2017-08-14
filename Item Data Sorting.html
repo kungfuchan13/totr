@@ -1,0 +1,77 @@
+<html>
+<textarea id="a"></textarea>
+<input type="button" value="Sort" onclick="process();">
+<div id="b"></div>
+</html>
+
+<script>
+var a = document.getElementById("a");
+var b = document.getElementById("b");
+
+function process() {
+    b.innerHTML = "";
+    var stages = a.value.split(":");
+    for (var i = 1; i < stages.length; i++) {
+        var encounters = stages[i].split("\n");
+        var encounterList = [];
+        var chestList = [];
+        for (var ii = 0; ii < encounters.length-1; ii++) {
+            var encounter = encounters[ii].split(" ~ ");
+            var mon = rmvInitSpce(encounter[0]);
+            var monList = [];
+            if (encounter[1])
+                monList = encounter[1].split(", ");
+            if (mon.includes("Chest"))
+                chestList.push({name: mon, value: rmvInitSpce(encounters[ii]), count: monList.length});
+            else
+                encounterList.push({name: mon, value: rmvInitSpce(encounters[ii]), count: monList.length});
+        }
+        if (encounters[encounters.length-1].startsWith("B - ") || encounters[encounters.length-1].startsWith(" - ")) {
+            var encounter = encounters[encounters.length-1].split(" ~ ");
+            var mon = rmvInitSpce(encounter[0]);
+            var monList = [];
+            if (encounter[1])
+                monList = encounter[1].split(", ");
+            if (mon.includes("Chest"))
+                chestList.push({name: mon, value: rmvInitSpce(encounters[encounters.length-1]), count: monList.length});
+            else
+                encounterList.push({name: mon, value: rmvInitSpce(encounters[encounters.length-1]), count: monList.length});
+        }
+        var prevStage = stages[i-1].split("\n");
+        b.innerHTML += prevStage[prevStage.length-1] + ":<br>";
+        encounterList.sort(lengthSort);
+        encounterList.sort(nameSort);
+        chestList.sort(lengthSort);
+        chestList.sort(nameSort);
+        for (var ii = 0; ii < chestList.length; ii++) {
+            if (chestList[ii].name) {
+                b.innerHTML += "&nbsp" + chestList[ii].value + "<br>";
+            }
+        }
+        for (var ii = 0; ii < encounterList.length; ii++) {
+            if (encounterList[ii].name) {
+                if (!encounterList[ii].name.startsWith("B - "))
+                    b.innerHTML += "&nbsp;";
+                b.innerHTML += encounterList[ii].value + "<br>";
+            }
+        }
+        b.innerHTML += "<br>"
+    }
+}
+
+function rmvInitSpce(string) {
+    return (string[0] == " ")?(string.substr(1)):(string);
+}
+
+function nameSort(a, b) {
+    if (a.name < b.name) return -1;
+    if (a.name > b.name) return 1;
+    return 0;
+}
+
+function lengthSort(a, b) {
+    if (a.count < b.count) return -1;
+    if (a.count > b.count) return 1;
+    return 0;
+}
+</script>
