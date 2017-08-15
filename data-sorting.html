@@ -19,23 +19,29 @@ function process() {
             var encounter = encounters[ii].split(" ~ ");
             var mon = rmvInitSpce(encounter[0]);
             var monList = [];
+            var line = rmvInitSpce(encounters[ii]);
             if (encounter[1])
                 monList = encounter[1].split(", ");
+            if (mon.split(", ").length > 1 || mon != removeCount(mon))
+                line = removeCount(mon.split(", ")[0]) + " ~ " + line.substr(2);
             if (mon.includes("Chest"))
-                chestList.push({name: mon, value: rmvInitSpce(encounters[ii]), count: monList.length});
+                chestList.push({name: mon, value: line, count: monList.length});
             else
-                encounterList.push({name: mon, value: rmvInitSpce(encounters[ii]), count: monList.length});
+                encounterList.push({name: mon, value: line, count: monList.length});
         }
         if (encounters[encounters.length-1].startsWith("B - ") || encounters[encounters.length-1].startsWith(" - ")) {
             var encounter = encounters[encounters.length-1].split(" ~ ");
             var mon = rmvInitSpce(encounter[0]);
             var monList = [];
+            var line = rmvInitSpce(encounters[encounters.length-1]);
             if (encounter[1])
                 monList = encounter[1].split(", ");
+            if (mon.split(", ").length > 1 || mon != removeCount(mon))
+                line = removeCount(mon.split(", ")[0]) + " ~ " + line.substr(2);
             if (mon.includes("Chest"))
-                chestList.push({name: mon, value: rmvInitSpce(encounters[encounters.length-1]), count: monList.length});
+                chestList.push({name: mon, value: line, count: monList.length});
             else
-                encounterList.push({name: mon, value: rmvInitSpce(encounters[encounters.length-1]), count: monList.length});
+                encounterList.push({name: mon, value: line, count: monList.length});
         }
         var prevStage = stages[i-1].split("\n");
         b.innerHTML += prevStage[prevStage.length-1] + ":<br>";
@@ -59,8 +65,21 @@ function process() {
     }
 }
 
+
+
+function removeCount(string) {
+    if (parseInt(string[string.length-1]))
+        return string.substring(0, string.length-3);
+    else if (string == "Forest" || string == "Road" || string == "Icy Mountain" || string == "Mountain Road" || string == "Desert")
+        return "";
+    else return string;
+}
+
 function rmvInitSpce(string) {
-    return (string[0] == " ")?(string.substr(1)):(string);
+    var output = (string[0] == " ")?(string.substr(1)):(string);
+    if (output && output[0] != "-")
+        output = "- " + output;
+    return output;
 }
 
 function nameSort(a, b) {
