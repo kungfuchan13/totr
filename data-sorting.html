@@ -1,12 +1,14 @@
 <html>
 <textarea id="a"></textarea>
 <input type="button" value="Sort" onclick="process();">
+<div id="test"></div>
 <div id="b"></div>
 </html>
 
 <script>
 var a = document.getElementById("a");
 var b = document.getElementById("b");
+var test = document.getElementById("test");
 
 function process() {
     b.innerHTML = "";
@@ -18,7 +20,9 @@ function process() {
         for (var ii = 0; ii < encounters.length-1; ii++) {
             var encounter = encounters[ii].split(" ~ ");
             var mon = rmvInitSpce(encounter[0]);
+            if (mon) {
             var monList = [];
+            var itemList = encounter[encounter.length-1].split(", ");
             var line = rmvInitSpce(encounters[ii]);
             if (encounter[1])
                 monList = encounter[1].split(", ");
@@ -27,12 +31,15 @@ function process() {
             if (mon.includes("Chest"))
                 chestList.push({name: mon, value: line, count: monList});
             else
-                encounterList.push({name: mon, value: line, count: monList});
+                encounterList.push({name: mon, value: line, count: monList, items: itemList});
+            }
         }
         if (encounters[encounters.length-1].startsWith("B - ") || encounters[encounters.length-1].startsWith(" - ")) {
             var encounter = encounters[encounters.length-1].split(" ~ ");
             var mon = rmvInitSpce(encounter[0]);
+            if (mon) {
             var monList = [];
+            var itemList = encounter[encounter.length-1].split(", ");
             var line = rmvInitSpce(encounters[encounters.length-1]);
             if (encounter[1])
                 monList = encounter[1].split(", ");
@@ -41,16 +48,28 @@ function process() {
             if (mon.includes("Chest"))
                 chestList.push({name: mon, value: line, count: monList});
             else
-                encounterList.push({name: mon, value: line, count: monList});
+                encounterList.push({name: mon, value: line, count: monList, items: itemList});
+            }
         }
         var prevStage = stages[i-1].split("\n");
         b.innerHTML += prevStage[prevStage.length-1] + ":<br>";
+
+        encounterList.forEach(trackPos);
+        encounterList.sort(itemSort);
+        encounterList.forEach(trackPos);
         encounterList.sort(valueSort);
+        encounterList.forEach(trackPos);
         encounterList.sort(lengthSort);
+        encounterList.forEach(trackPos);
         encounterList.sort(nameSort);
+
+        chestList.forEach(trackPos);
         chestList.sort(valueSort);
+        chestList.forEach(trackPos);
         chestList.sort(lengthSort);
+        chestList.forEach(trackPos);
         chestList.sort(nameSort);
+
         for (var ii = 0; ii < chestList.length; ii++) {
             if (chestList[ii].name) {
                 b.innerHTML += "&nbsp" + chestList[ii].value + "<br>";
@@ -69,6 +88,10 @@ function process() {
 
 
 
+function trackPos(item, index) {
+    item.oldPos = index;
+}
+
 function removeCount(string) {
     if (parseInt(string[string.length-1]))
         return string.substring(0, string.length-3);
@@ -85,20 +108,42 @@ function rmvInitSpce(string) {
 }
 
 function nameSort(a, b) {
-    if (a.name < b.name) return -1;
-    if (a.name > b.name) return 1;
-    return 0;
+    var dif = 0;
+    if (a.name > b.name) dif = 1;
+    if (a.name < b.name) dif = -1;
+    if (dif != 0)
+        return dif;
+    else
+        return a.oldPos - b.oldPos;
 }
 
 function lengthSort(a, b) {
-    if (a.count.length < b.count.length) return -1;
-    if (a.count.length > b.count.length) return 1;
-    return 0;
+    var dif = 0;
+    if (a.count.length > b.count.length) dif = 1;
+    if (a.count.length < b.count.length) dif = -1;
+    if (dif != 0)
+        return dif;
+    else
+        return a.oldPos - b.oldPos;
 }
 
 function valueSort(a, b) {
-    if (a.count < b.count) return -1;
-    if (a.count > b.count) return 1;
-    return 0;
+    var dif = 0;
+    if (a.count > b.count) dif = 1;
+    if (a.count < b.count) dif = -1;
+    if (dif != 0)
+        return dif;
+    else
+        return a.oldPos - b.oldPos;
+}
+
+function itemSort(a, b) {
+    var dif = 0;
+    if (a.items > b.items) dif = 1;
+    if (a.items < b.items) dif = -1;
+    if (dif != 0)
+        return dif;
+    else
+        return a.oldPos - b.oldPos;
 }
 </script>
